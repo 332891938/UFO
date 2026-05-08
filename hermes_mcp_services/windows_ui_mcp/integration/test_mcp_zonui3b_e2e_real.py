@@ -3,6 +3,7 @@ import time
 from typing import List, Optional
 
 from conftest import call_tool, run_async
+from success_artifact_utils import write_success_artifact
 from window_launch_utils import close_test_window, launch_test_window
 
 
@@ -116,3 +117,4 @@ def test_mcp_zonui3b_deep_flow_real(server_url):
         assert isinstance(parsed, list)
     finally:
         close_test_window(launched_handle)
+    write_success_artifact("test_mcp_zonui3b_deep_flow_real", server_url=server_url, query=query)

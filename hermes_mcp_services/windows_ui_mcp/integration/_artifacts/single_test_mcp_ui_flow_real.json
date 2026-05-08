@@ -1,0 +1,7 @@
+{
+  "test_name": "test_mcp_ui_flow_real",
+  "status": "passed",
+  "started_at": 1778238944,
+  "finished_at": 1778238951,
+  "server_url": "http://127.0.0.1:8037/mcp"
+}

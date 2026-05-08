@@ -1,6 +1,7 @@
 import time
 
 from conftest import call_tool, require_env, run_async
+from success_artifact_utils import write_success_artifact
 from window_launch_utils import close_test_window, launch_test_window
 
 
@@ -43,6 +44,7 @@ def test_mcp_ui_flow_real(server_url):
         assert screenshot.startswith("data:image/png;base64,")
     finally:
         close_test_window(launched_handle)
+    write_success_artifact("test_mcp_ui_flow_real", server_url=server_url)
 
 
 def test_mcp_pdf_flow_real(server_url):

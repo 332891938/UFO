@@ -9,6 +9,7 @@ from typing import List, Optional, Tuple
 from PIL import Image, ImageChops
 
 from conftest import call_tool, run_async
+from success_artifact_utils import write_success_artifact
 from window_launch_utils import close_test_window, launch_test_window
 
 
@@ -389,3 +390,10 @@ def test_mcp_strict_acceptance_real(server_url):
             time.sleep(pause_seconds)
     finally:
         close_test_window(launched_handle)
+    write_success_artifact(
+        "test_mcp_strict_acceptance_real",
+        server_url=server_url,
+        text=text,
+        save_artifacts=save_artifacts,
+        trace_path=str(trace_path) if save_artifacts else "",
+    )

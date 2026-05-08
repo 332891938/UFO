@@ -1,0 +1,9 @@
+{
+  "test_name": "test_mcp_strict_acceptance_real",
+  "status": "passed",
+  "timestamp": 1778240186,
+  "server_url": "http://127.0.0.1:8037/mcp",
+  "text": "strict-acceptance-1778240154",
+  "save_artifacts": true,
+  "trace_path": "D:\\open-source\\UFO\\hermes_mcp_services\\windows_ui_mcp\\integration\\_artifacts\\strict_1778240157_trace.json"
+}

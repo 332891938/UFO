@@ -1,3 +1,4 @@
+import subprocess
 import time
 from typing import Any, Callable, Optional
 
@@ -66,14 +67,33 @@ def _match_mcp_window(
     return None
 
 
+def _best_handle_match(
+    windows: list[dict],
+    handles: list[int],
+    current_snapshot: dict[int, dict[str, Any]],
+    fallback_snapshot: dict[int, dict[str, Any]],
+    picker: WindowPicker,
+) -> tuple[Optional[dict], Optional[int]]:
+    for handle in reversed(handles):
+        handle_info = current_snapshot.get(handle) or fallback_snapshot.get(handle)
+        if not handle_info:
+            continue
+        target = _match_mcp_window(windows, handle_info, picker)
+        if target is not None:
+            return target, handle
+    return None, None
+
+
 def launch_test_window(
     server_url: str,
     app_command: str,
     picker: WindowPicker,
     launch_wait_seconds: float = 2.0,
 ) -> tuple[list[dict], Optional[dict], Optional[int]]:
+    before_windows = get_windows(server_url)
+    before_ids = {str(item.get("id") or "") for item in before_windows}
     before = _desktop_snapshot()
-    run_async(call_tool(server_url, "run_shell", {"bash_command": app_command}))
+    subprocess.Popen(app_command, shell=True)
     time.sleep(launch_wait_seconds)
 
     windows = get_windows(server_url)
@@ -89,17 +109,42 @@ def launch_test_window(
         current_handles = [
             handle for handle in current_snapshot.keys() if handle not in before
         ]
+        new_mcp_windows = [
+            item
+            for item in current_windows
+            if str(item.get("id") or "") and str(item.get("id") or "") not in before_ids
+        ]
         if current_handles:
             new_handles = current_handles
-        for handle in reversed(new_handles):
-            launched_handle = handle
-            handle_info = current_snapshot.get(handle) or after.get(handle)
-            if not handle_info:
-                continue
-            target = _match_mcp_window(current_windows, handle_info, picker)
-            if target is not None:
-                windows = current_windows
-                break
+        matched, matched_handle = _best_handle_match(
+            current_windows,
+            new_handles,
+            current_snapshot,
+            after,
+            picker,
+        )
+        if matched is not None:
+            target = matched
+            launched_handle = matched_handle
+            windows = current_windows
+            break
+        if new_mcp_windows:
+            picked = picker(new_mcp_windows)
+            if picked is not None:
+                picked_name = str(picked.get("name") or "")
+                picked_class = str(picked.get("class_name") or "")
+                for handle in reversed(new_handles):
+                    handle_info = current_snapshot.get(handle) or after.get(handle)
+                    if not handle_info:
+                        continue
+                    if (
+                        picked_name == str(handle_info.get("name") or "")
+                        and picked_class == str(handle_info.get("class_name") or "")
+                    ):
+                        target = picked
+                        launched_handle = handle
+                        windows = current_windows
+                        break
         if target is None:
             time.sleep(0.2)
     return windows, target, launched_handle

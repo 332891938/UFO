@@ -1,0 +1,7 @@
+{
+  "test_name": "test_mcp_zonui3b_click_flow_real",
+  "status": "passed",
+  "started_at": 1778238976,
+  "finished_at": 1778239006,
+  "server_url": "http://127.0.0.1:8037/mcp"
+}
