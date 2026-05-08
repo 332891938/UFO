@@ -33,6 +33,28 @@ export interface GalaxyEvent {
 export type EventCallback = (event: GalaxyEvent) => void;
 export type StatusCallback = (status: 'connecting' | 'connected' | 'disconnected' | 'reconnecting') => void;
 
+function resolveApiKey(): string {
+  const params = new URLSearchParams(window.location.search);
+  const queryToken =
+    params.get('token') ||
+    params.get('api_key') ||
+    params.get('api-key') ||
+    '';
+
+  if (queryToken) {
+    window.sessionStorage.setItem('galaxy-webui-api-key', queryToken);
+    return queryToken;
+  }
+
+  const injectedToken = (window as any).__GALAXY_API_KEY__ || '';
+  if (injectedToken) {
+    window.sessionStorage.setItem('galaxy-webui-api-key', injectedToken);
+    return injectedToken;
+  }
+
+  return window.sessionStorage.getItem('galaxy-webui-api-key') || '';
+}
+
 export class WebSocketClient {
   private ws: WebSocket | null = null;
   private url: string;
@@ -48,7 +70,7 @@ export class WebSocketClient {
     if (!url) {
       const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
       const host = window.location.host;
-      const apiKey = (window as any).__GALAXY_API_KEY__ || '';
+      const apiKey = resolveApiKey();
       this.url = `${protocol}//${host}/ws?token=${encodeURIComponent(apiKey)}`;
     } else {
       this.url = url;

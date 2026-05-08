@@ -1,4 +1,4 @@
-﻿#!/usr/bin/env python3
+#!/usr/bin/env python3
 # Copyright (c) Microsoft Corporation.
 # Licensed under the MIT License.
 
@@ -318,13 +318,18 @@ async def run_webui_mode(client: GalaxyClient):
 
     :param client: Initialized GalaxyClient instance
     """
+    import secrets
     import socket
     import webbrowser
+    from urllib.parse import quote
     import uvicorn
     from galaxy.webui.server import app, set_galaxy_client
+    from galaxy.webui.dependencies import get_app_state
 
     # Set the Galaxy client for the WebUI server
     set_galaxy_client(client)
+    app_state = get_app_state()
+    app_state.api_key = app_state.api_key or secrets.token_urlsafe(32)
 
     # Find available port
     def find_free_port(start_port=8000, max_attempts=10):
@@ -359,10 +364,11 @@ async def run_webui_mode(client: GalaxyClient):
             client.display.print_warning(f"⚠️  Could not write frontend config: {e}")
 
     # Display banner
+    browser_url = f"http://localhost:{port}/?token={quote(app_state.api_key)}"
     client.display.print_info("🌌 Galaxy WebUI Starting...")
     client.display.print_info(f"📡 Server: http://localhost:{port}")
     client.display.print_info(
-        f"🎨 Frontend: Open http://localhost:{port} in your browser"
+        f"🎨 Frontend: Open {browser_url} in your browser"
     )
     client.display.print_info(f"🔌 WebSocket: ws://localhost:{port}/ws")
     client.display.print_info("\n💡 Press Ctrl+C to stop the server\n")
@@ -381,7 +387,7 @@ async def run_webui_mode(client: GalaxyClient):
     async def open_browser_delayed():
         """Open browser after server starts."""
         await asyncio.sleep(1.5)  # Wait for server to start
-        url = f"http://localhost:{port}"
+        url = browser_url
         client.display.print_info(f"🌐 Opening browser: {url}")
         webbrowser.open(url)
 

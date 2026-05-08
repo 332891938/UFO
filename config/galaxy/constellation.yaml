@@ -7,6 +7,10 @@ HEARTBEAT_INTERVAL: 30.0  # Heartbeat interval in seconds
 RECONNECT_DELAY: 5.0  # Delay before reconnecting in seconds
 MAX_CONCURRENT_TASKS: 6  # Maximum concurrent tasks across the constellation
 MAX_STEP: 15  # Maximum steps per session
+TEMPERATURE: 0.0  # LLM temperature for constellation planning
+TOP_P: 0.9  # LLM top-p for constellation planning
+MAX_TOKENS: 2000  # Max tokens for constellation planning responses
+TIMEOUT: 60  # Request timeout in seconds for constellation planning
 
 # Device Configuration
 DEVICE_INFO: "config/galaxy/devices.yaml"  # Path to device configuration file

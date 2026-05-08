@@ -14,6 +14,7 @@ This is the refactored version with improved architecture:
 - Dependency injection for state management
 """
 
+import json
 import logging
 import os
 import secrets
@@ -21,7 +22,7 @@ from contextlib import asynccontextmanager
 from pathlib import Path
 from typing import TYPE_CHECKING, Optional
 
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse, HTMLResponse
 from fastapi.staticfiles import StaticFiles
@@ -131,24 +132,44 @@ async def logo() -> FileResponse:
 
 
 @app.get("/")
-async def root() -> HTMLResponse:
+async def root(request: Request) -> HTMLResponse:
     """
     Root endpoint that serves the web UI.
 
     Attempts to serve the built React application if available,
     otherwise returns a placeholder HTML page from templates.
 
-    The API key is NOT embedded in the HTML response for security.
-    The frontend must obtain authentication via the /api/authenticate
-    endpoint using the API key displayed in the server console.
+    Supports passing the API key through the page URL as ``?token=...``.
+    The resolved key is injected into the frontend bootstrap script so the
+    browser can open the authenticated WebSocket connection.
 
     :return: HTMLResponse containing the web UI or placeholder
     """
+    app_state = get_app_state()
+    query_token = (
+        request.query_params.get("token")
+        or request.query_params.get("api_key")
+        or request.query_params.get("api-key")
+    )
+    runtime_api_key = json.dumps(query_token or app_state.api_key or "")
+    runtime_script = (
+        "<script>"
+        f"window.__GALAXY_API_KEY__ = {runtime_api_key};"
+        "</script>"
+    )
+
     # Try to serve built React app first
     frontend_index: Path = Path(__file__).parent / "frontend" / "dist" / "index.html"
     if frontend_index.exists():
         with open(frontend_index, "r", encoding="utf-8") as f:
             content = f.read()
+
+        if "</head>" in content:
+            content = content.replace("</head>", f"{runtime_script}</head>", 1)
+        elif "</body>" in content:
+            content = content.replace("</body>", f"{runtime_script}</body>", 1)
+        else:
+            content = f"{runtime_script}{content}"
 
         return HTMLResponse(
             content=content,
@@ -164,7 +185,16 @@ async def root() -> HTMLResponse:
     template_path: Path = Path(__file__).parent / "templates" / "index.html"
     if template_path.exists():
         with open(template_path, "r", encoding="utf-8") as f:
-            return HTMLResponse(content=f.read(), status_code=200)
+            content = f.read()
+
+        if "</head>" in content:
+            content = content.replace("</head>", f"{runtime_script}</head>", 1)
+        elif "</body>" in content:
+            content = content.replace("</body>", f"{runtime_script}</body>", 1)
+        else:
+            content = f"{runtime_script}{content}"
+
+        return HTMLResponse(content=content, status_code=200)
 
     # Ultimate fallback if template file doesn't exist
     return HTMLResponse(

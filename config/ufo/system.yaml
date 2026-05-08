@@ -4,7 +4,7 @@
 MAX_TOKENS: 2000  # The max token limit for the response completion
 MAX_RETRY: 20  # The max retry limit for the response completion
 TEMPERATURE: 0.0  # The temperature of the model: the lower the value, the more consistent
-TOP_P: 0.0  # The top_p of the model: the lower the value, the more conservative
+TOP_P: 0.9  # The top_p of the model: the lower the value, the more conservative
 TIMEOUT: 60  # The call timeout(s), default is 1 mins
 
 # Control Backend

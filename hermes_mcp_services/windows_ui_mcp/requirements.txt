@@ -1,0 +1,17 @@
+fastmcp
+pydantic
+pywinauto
+uiautomation
+pyautogui
+pillow
+pywin32
+PyPDF2
+pandas
+tabulate
+psutil
+requests
+html2text
+colorama
+rich
+gradio_client
+pytest

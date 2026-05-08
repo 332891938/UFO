@@ -1,0 +1,6 @@
+import fastmcp; print("fastmcp OK")
+import pyautogui; print("pyautogui OK")
+import pywinauto; print("pywinauto OK")
+import PIL; print("PIL OK")
+import uvicorn; print("uvicorn OK")
+print("ALL OK")
