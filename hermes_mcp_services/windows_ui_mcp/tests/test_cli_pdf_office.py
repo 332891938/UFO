@@ -11,13 +11,13 @@ def test_is_cli_command_allowed_accepts_safe_and_blocks_dangerous(service):
 
 def test_run_shell_launches_allowed_command(service, monkeypatch):
     launched = {}
-    monkeypatch.setattr("mcp_service.subprocess.Popen", lambda args, shell=False: launched.setdefault("args", args))
+    monkeypatch.setattr("mcp_service.os.startfile", lambda path: launched.setdefault("path", path))
     monkeypatch.setattr("mcp_service.time.sleep", lambda seconds: None)
 
     result = service.run_shell("notepad.exe")
 
     assert result == "Launched command: notepad.exe"
-    assert launched["args"] == ["notepad.exe"]
+    assert launched["path"] == "notepad.exe"
 
 
 def test_run_shell_rejects_blocked_command(service):

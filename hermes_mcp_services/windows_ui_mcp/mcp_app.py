@@ -1,4 +1,5 @@
 import argparse
+import asyncio
 import platform
 from typing import Any, Dict, List, Optional
 
@@ -10,6 +11,9 @@ from mcp_service import WindowsMCPService
 
 
 def register_tools(mcp: FastMCP, service: WindowsMCPService) -> None:
+    def _dump_target_list(items: List[TargetInfo]) -> List[Dict[str, Any]]:
+        return [item.model_dump() for item in items]
+
     @mcp.tool()
     def get_desktop_app_info(
         remove_empty: bool = Field(True, description="Hide windows without title text when true."),
@@ -20,13 +24,17 @@ def register_tools(mcp: FastMCP, service: WindowsMCPService) -> None:
         return service.get_desktop_app_info(remove_empty, refresh_app_windows)
 
     @mcp.tool()
-    def get_desktop_app_target_info(
+    async def get_desktop_app_target_info(
         remove_empty: bool = Field(True, description="Hide windows without title text when true."),
         refresh_app_windows: bool = Field(
             True, description="Refresh the desktop window cache when true."
         ),
-    ) -> List[TargetInfo]:
-        return service.get_desktop_app_target_info(remove_empty, refresh_app_windows)
+    ) -> List[Dict[str, Any]]:
+        return _dump_target_list(
+            await asyncio.to_thread(
+                service.get_desktop_app_target_info, remove_empty, refresh_app_windows
+            )
+        )
 
     @mcp.tool()
     def select_application_window(
@@ -55,13 +63,17 @@ def register_tools(mcp: FastMCP, service: WindowsMCPService) -> None:
         return service.get_app_window_controls_info(field_list, max_controls)
 
     @mcp.tool()
-    def get_app_window_controls_target_info(
+    async def get_app_window_controls_target_info(
         field_list: List[str] = Field(
             default_factory=list, description="Reserved for compatibility; can be empty."
         ),
         max_controls: int = Field(500, description="Upper bound of controls to return."),
-    ) -> List[TargetInfo]:
-        return service.get_app_window_controls_target_info(field_list, max_controls)
+    ) -> List[Dict[str, Any]]:
+        return _dump_target_list(
+            await asyncio.to_thread(
+                service.get_app_window_controls_target_info, field_list, max_controls
+            )
+        )
 
     @mcp.tool()
     def capture_window_screenshot() -> str:
@@ -86,51 +98,62 @@ def register_tools(mcp: FastMCP, service: WindowsMCPService) -> None:
         return service.add_control_list(control_list)
 
     @mcp.tool()
-    def parse_window_with_zonui3b(
+    async def parse_window_with_zonui3b(
         query: str = Field(
             "", description="要查找的UI元素描述。为空则返回空列表。"
         ),
-    ) -> List[TargetInfo]:
-        return service.parse_window_with_zonui3b(query)
+    ) -> List[Dict[str, Any]]:
+        return _dump_target_list(
+            await asyncio.to_thread(service.parse_window_with_zonui3b, query)
+        )
 
     @mcp.tool()
-    def find_control_on_screen(
+    async def find_control_on_screen(
         description: str = Field(
             description="要查找的UI元素描述，如 'Save button'，'关闭按钮'。"
         ),
         element_type: str = Field(
             "Button", description="元素类型标签，如 Button, TextBox, CheckBox。"
         ),
-    ) -> Optional[TargetInfo]:
+    ) -> Optional[Dict[str, Any]]:
         """用ZonUI-3B视觉定位屏幕上的控件。
 
         给定元素描述，截图后用ZonUI-3B精准定位坐标。
         返回TargetInfo（含id用于后续操作如click_control），未找到返回null。
         这是替换OmniParser后新增的核心能力。
         """
-        return service.find_control_on_screen(description, element_type)
+        result = await asyncio.to_thread(
+            service.find_control_on_screen, description, element_type
+        )
+        if result is None:
+            return None
+        return result.model_dump()
 
     @mcp.tool()
-    def inject_zonui3b_controls(
+    async def inject_zonui3b_controls(
         control_list: List[Dict[str, Any]] = Field(
             description="ZonUI-3B style controls to inject."
         ),
-    ) -> List[TargetInfo]:
-        return service.inject_zonui3b_controls(control_list)
+    ) -> List[Dict[str, Any]]:
+        return _dump_target_list(
+            await asyncio.to_thread(service.inject_zonui3b_controls, control_list)
+        )
 
     @mcp.tool()
-    def list_controls_hybrid(
+    async def list_controls_hybrid(
         max_uia_controls: int = Field(
             500, description="Maximum number of UIA controls to enumerate."
         ),
-    ) -> List[TargetInfo]:
+    ) -> List[Dict[str, Any]]:
         """列出窗口控件（纯UIA枚举）。
 
         与旧版不同，不再依赖OmniParser全屏解析。
         控件枚举由Windows UIA完成；ZonUI-3B通过
         find_control_on_screen()提供精准视觉定位。
         """
-        return service.list_controls_hybrid(max_uia_controls)
+        return _dump_target_list(
+            await asyncio.to_thread(service.list_controls_hybrid, max_uia_controls)
+        )
 
     @mcp.tool()
     def click_input(

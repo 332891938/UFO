@@ -13,5 +13,4 @@ requests
 html2text
 colorama
 rich
-gradio_client
 pytest

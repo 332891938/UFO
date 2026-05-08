@@ -1,0 +1,42 @@
+[
+  {
+    "stage": "selected_window",
+    "window_id": "1",
+    "window_name": "无标题 - Notepad",
+    "window_class": "Notepad"
+  },
+  {
+    "stage": "before_screenshot_saved"
+  },
+  {
+    "stage": "text_control_selected",
+    "control_id": "1",
+    "control_name": "文本编辑器",
+    "control_type": "Document"
+  },
+  {
+    "stage": "zonui_found",
+    "found_id": "29",
+    "found_name": "File",
+    "found_rect": [
+      665,
+      704,
+      685,
+      724
+    ]
+  },
+  {
+    "stage": "after_click_screenshot_saved"
+  },
+  {
+    "stage": "after_click_validated",
+    "ratio": 0.11029949854842966
+  },
+  {
+    "stage": "after_type_screenshot_saved"
+  },
+  {
+    "stage": "after_type_validated",
+    "ratio": 0.11002333069411455
+  }
+]

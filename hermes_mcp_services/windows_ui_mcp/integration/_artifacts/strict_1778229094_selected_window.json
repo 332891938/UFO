@@ -1,0 +1,14 @@
+{
+  "id": "1",
+  "name": "无标题 - Notepad",
+  "title": "无标题 - Notepad",
+  "class_name": "Notepad",
+  "control_type": "Window",
+  "rectangle": {
+    "x": 399,
+    "y": 399,
+    "width": 1875,
+    "height": 1263
+  },
+  "kind": "window"
+}

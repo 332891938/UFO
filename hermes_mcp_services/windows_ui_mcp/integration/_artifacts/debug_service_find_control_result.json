@@ -1,0 +1,52 @@
+{
+  "description": "File",
+  "status": "passed",
+  "windows_count": 30,
+  "target": {
+    "id": "2",
+    "name": "无标题 - Notepad",
+    "title": "无标题 - Notepad",
+    "class_name": "Notepad",
+    "control_type": "Window",
+    "rectangle": {
+      "x": 627,
+      "y": 627,
+      "width": 1875,
+      "height": 1263
+    },
+    "kind": "window"
+  },
+  "selected": {
+    "success": true,
+    "root_name": "无标题 - Notepad",
+    "window_info": {
+      "id": "2",
+      "name": "无标题 - Notepad",
+      "title": "无标题 - Notepad",
+      "class_name": "Notepad",
+      "control_type": "Window",
+      "rectangle": {
+        "x": 627,
+        "y": 627,
+        "width": 1875,
+        "height": 1263
+      },
+      "kind": "window"
+    }
+  },
+  "find_control_on_screen_started": true,
+  "find_control_on_screen_finished": true,
+  "found": {
+    "kind": "control",
+    "id": "1",
+    "name": "File",
+    "type": "Button",
+    "rect": [
+      666,
+      700,
+      686,
+      720
+    ],
+    "source": "zonui3b"
+  }
+}

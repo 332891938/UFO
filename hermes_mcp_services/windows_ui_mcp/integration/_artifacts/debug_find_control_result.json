@@ -1,0 +1,53 @@
+{
+  "server_url": "http://127.0.0.1:8033/mcp",
+  "description": "File",
+  "status": "passed",
+  "windows_count": 31,
+  "target": {
+    "id": "1",
+    "name": "无标题 - Notepad",
+    "title": "无标题 - Notepad",
+    "class_name": "Notepad",
+    "control_type": "Window",
+    "rectangle": {
+      "x": 399,
+      "y": 399,
+      "width": 1875,
+      "height": 1263
+    },
+    "kind": "window"
+  },
+  "selected": {
+    "success": true,
+    "root_name": "无标题 - Notepad",
+    "window_info": {
+      "id": "1",
+      "name": "无标题 - Notepad",
+      "title": "无标题 - Notepad",
+      "class_name": "Notepad",
+      "control_type": "Window",
+      "rectangle": {
+        "x": 399,
+        "y": 399,
+        "width": 1875,
+        "height": 1263
+      },
+      "kind": "window"
+    }
+  },
+  "find_control_on_screen_started": true,
+  "find_control_on_screen_finished": true,
+  "found": {
+    "kind": "control",
+    "id": "1",
+    "name": "File",
+    "type": "Button",
+    "rect": [
+      438,
+      472,
+      458,
+      492
+    ],
+    "source": "zonui3b"
+  }
+}

@@ -1,4 +1,5 @@
 from test_support import FakeControl, FakeRect
+from mcp_service import DEFAULT_CONTROL_LIST
 
 
 def test_get_desktop_app_info_refreshes_cache(service, fake_state):
@@ -51,6 +52,11 @@ def test_get_app_window_controls_info_updates_control_cache(service, fake_state)
 
     assert result == [{"id": "1"}, {"id": "2"}]
     assert fake_state.control_dict == {"1": child1, "2": child2}
+    fake_state.control_inspector.find_control_elements_in_descendants.assert_called_once_with(
+        window,
+        control_type_list=DEFAULT_CONTROL_LIST,
+        class_name_list=DEFAULT_CONTROL_LIST,
+    )
 
 
 def test_add_control_list_assigns_incremental_ids(service, fake_state, monkeypatch):
@@ -107,3 +113,52 @@ def test_capture_window_screenshot_uses_photographer(service, fake_state):
     assert result == "encoded"
     fake_state.photographer.capture_app_window_screenshot.assert_called_once()
     fake_state.photographer.encode_image.assert_called_once_with("image")
+
+
+def test_capture_window_screenshot_refreshes_selected_window_from_cached_info(
+    service, fake_state
+):
+    stale_window = FakeControl(name="Old Window", control_type="Window")
+    fresh_window = FakeControl(name="Notepad", control_type="Window")
+    fresh_window.element_info.class_name = "Notepad"
+    fake_state.selected_window = stale_window
+    fake_state.selected_window_info = {
+        "id": "1",
+        "name": "Notepad",
+        "title": "Notepad",
+        "class_name": "Notepad",
+    }
+    fake_state.control_inspector.get_desktop_app_dict.return_value = {"1": fresh_window}
+    fake_state.photographer.capture_app_window_screenshot.return_value = "image"
+    fake_state.photographer.encode_image.return_value = "encoded"
+
+    result = service.capture_window_screenshot()
+
+    assert result == "encoded"
+    assert fake_state.selected_window is fresh_window
+    fake_state.control_inspector.get_desktop_app_dict.assert_called_once_with(
+        remove_empty=False
+    )
+    fake_state.photographer.capture_app_window_screenshot.assert_called_once_with(
+        fresh_window
+    )
+
+
+def test_texts_falls_back_to_clipboard_for_document_controls(service, fake_state, monkeypatch):
+    control = FakeControl(name="文本编辑器", control_type="Document")
+    fake_state.control_dict = {"1": control}
+
+    monkeypatch.setattr(
+        service,
+        "_execute_ui_action",
+        lambda function, arguments, target_id=None, target_name="": ["文本编辑器"],
+    )
+    monkeypatch.setattr(
+        service,
+        "_read_control_text_via_clipboard",
+        lambda selected: "strict-acceptance-visible-text",
+    )
+
+    result = service.texts("1", "文本编辑器")
+
+    assert result == "strict-acceptance-visible-text"

@@ -9,7 +9,7 @@ This project now vendors a local `ufo/automator` runtime and routes UI / Office 
 - `mcp_service.py`: core business logic, grouped by UI / vision / CLI / PDF / Office.
 - `mcp_state.py`: shared runtime state.
 - `mcp_models.py`: local response models.
-- `tests/`: unit tests with mocks for UIA, Office, PDF, CLI, and OmniParser paths.
+- `tests/`: unit tests with mocks for UIA, Office, PDF, CLI, and ZonUI-3B paths.
 
 ## Features
 ### UI
@@ -34,9 +34,10 @@ This project now vendors a local `ufo/automator` runtime and routes UI / Office 
 - `wait`
 - `summary`
 
-### Vision
-- `parse_window_with_omniparser`
-- `inject_omniparser_controls`
+### Vision (ZonUI-3B)
+- `find_control_on_screen`
+- `parse_window_with_zonui3b`
+- `inject_zonui3b_controls`
 - `list_controls_hybrid`
 
 ### CLI
@@ -94,5 +95,5 @@ python server.py --host localhost --port 8030
 - Also absorbs Windows-side capabilities from `cli_mcp_server.py`, `pdf_reader_mcp_server.py`, and the Office COM MCP servers.
 - Bundles a local `ufo/automator` copy so the service can be copied out and run independently.
 - Uses `pywinauto` and `pyautogui` for UI automation.
-- OmniParser tools require a reachable Gradio endpoint; pass `endpoint` or set `HERMES_OMNIPARSER_ENDPOINT`.
+- ZonUI-3B tools require a reachable service endpoint via `ZONUI3B_SERVICE_URL` (defaults to `http://localhost:8100`).
 - Word / Excel / PowerPoint tools require Microsoft Office installed and an open target document/workbook/presentation.

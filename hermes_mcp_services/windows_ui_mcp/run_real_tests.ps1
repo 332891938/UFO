@@ -4,7 +4,7 @@ param(
     [string]$UiWindowKeyword = "Notepad",
     [string]$PdfPath = "",
     [string]$PdfDir = "",
-    [string]$OmniParserEndpoint = "",
+    [string]$ZonUI3BServiceUrl = "",
     [string]$WordProcess = "",
     [string]$ExcelProcess = "",
     [string]$ExcelSheet = "",
@@ -18,7 +18,7 @@ $env:HERMES_TEST_UI_APP = $UiApp
 $env:HERMES_TEST_UI_WINDOW_KEYWORD = $UiWindowKeyword
 $env:HERMES_TEST_PDF_PATH = $PdfPath
 $env:HERMES_TEST_PDF_DIR = $PdfDir
-$env:HERMES_OMNIPARSER_ENDPOINT = $OmniParserEndpoint
+$env:ZONUI3B_SERVICE_URL = $ZonUI3BServiceUrl
 $env:HERMES_TEST_WORD_PROCESS = $WordProcess
 $env:HERMES_TEST_EXCEL_PROCESS = $ExcelProcess
 $env:HERMES_TEST_EXCEL_SHEET = $ExcelSheet

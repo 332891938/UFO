@@ -1,0 +1,422 @@
+[
+  {
+    "id": "1",
+    "name": "无标题 - Notepad",
+    "title": "无标题 - Notepad",
+    "class_name": "Notepad",
+    "control_type": "Window",
+    "rectangle": {
+      "x": 285,
+      "y": 285,
+      "width": 1875,
+      "height": 1263
+    },
+    "kind": "window"
+  },
+  {
+    "id": "2",
+    "name": "test_mcp_strict_acceptance_e2e_real.py - UFO - Trae",
+    "title": "test_mcp_strict_acceptance_e2e_real.py - UFO - Trae",
+    "class_name": "Chrome_WidgetWin_1",
+    "control_type": "Window",
+    "rectangle": {
+      "x": 1131,
+      "y": 217,
+      "width": 2425,
+      "height": 1630
+    },
+    "kind": "window"
+  },
+  {
+    "id": "3",
+    "name": "*strict-acceptance-1778236337 - Notepad",
+    "title": "*strict-acceptance-1778236337 - Notepad",
+    "class_name": "Notepad",
+    "control_type": "Window",
+    "rectangle": {
+      "x": 741,
+      "y": 741,
+      "width": 1875,
+      "height": 1263
+    },
+    "kind": "window"
+  },
+  {
+    "id": "4",
+    "name": "Windows PowerShell",
+    "title": "Windows PowerShell",
+    "class_name": "CASCADIA_HOSTING_WINDOW_CLASS",
+    "control_type": "Window",
+    "rectangle": {
+      "x": -8,
+      "y": 1043,
+      "width": 1484,
+      "height": 936
+    },
+    "kind": "window"
+  },
+  {
+    "id": "5",
+    "name": "豆包",
+    "title": "豆包",
+    "class_name": "Chrome_WidgetWin_1",
+    "control_type": "Pane",
+    "rectangle": {
+      "x": 1256,
+      "y": 78,
+      "width": 1623,
+      "height": 1214
+    },
+    "kind": "window"
+  },
+  {
+    "id": "6",
+    "name": "xumin@DESKTOP-BU9I012: /mnt/c/Users/xumin",
+    "title": "xumin@DESKTOP-BU9I012: /mnt/c/Users/xumin",
+    "class_name": "CASCADIA_HOSTING_WINDOW_CLASS",
+    "control_type": "Window",
+    "rectangle": {
+      "x": 24,
+      "y": 907,
+      "width": 1344,
+      "height": 824
+    },
+    "kind": "window"
+  },
+  {
+    "id": "7",
+    "name": "任务管理器",
+    "title": "任务管理器",
+    "class_name": "TaskManagerWindow",
+    "control_type": "Window",
+    "rectangle": {
+      "x": 377,
+      "y": 450,
+      "width": 2076,
+      "height": 1311
+    },
+    "kind": "window"
+  },
+  {
+    "id": "8",
+    "name": "Scripts - 文件资源管理器",
+    "title": "Scripts - 文件资源管理器",
+    "class_name": "CabinetWClass",
+    "control_type": "Window",
+    "rectangle": {
+      "x": 0,
+      "y": 0,
+      "width": 0,
+      "height": 0
+    },
+    "kind": "window"
+  },
+  {
+    "id": "9",
+    "name": "Python314 - 文件资源管理器",
+    "title": "Python314 - 文件资源管理器",
+    "class_name": "CabinetWClass",
+    "control_type": "Window",
+    "rectangle": {
+      "x": 0,
+      "y": 0,
+      "width": 0,
+      "height": 0
+    },
+    "kind": "window"
+  },
+  {
+    "id": "10",
+    "name": "HEU KMS Activator - 文件资源管理器",
+    "title": "HEU KMS Activator - 文件资源管理器",
+    "class_name": "CabinetWClass",
+    "control_type": "Window",
+    "rectangle": {
+      "x": 0,
+      "y": 0,
+      "width": 0,
+      "height": 0
+    },
+    "kind": "window"
+  },
+  {
+    "id": "11",
+    "name": "cmd.sh - ZonUI-3B - Trae",
+    "title": "cmd.sh - ZonUI-3B - Trae",
+    "class_name": "Chrome_WidgetWin_1",
+    "control_type": "Window",
+    "rectangle": {
+      "x": 894,
+      "y": 564,
+      "width": 2598,
+      "height": 1769
+    },
+    "kind": "window"
+  },
+  {
+    "id": "12",
+    "name": "332891938/UFO: UFO³: Weaving the Digital Agent Galaxy — Mozilla Firefox",
+    "title": "332891938/UFO: UFO³: Weaving the Digital Agent Galaxy — Mozilla Firefox",
+    "class_name": "MozillaWindowClass",
+    "control_type": "Window",
+    "rectangle": {
+      "x": 828,
+      "y": 333,
+      "width": 2039,
+      "height": 1666
+    },
+    "kind": "window"
+  },
+  {
+    "id": "13",
+    "name": "windows_ui_mcp - 文件资源管理器",
+    "title": "windows_ui_mcp - 文件资源管理器",
+    "class_name": "CabinetWClass",
+    "control_type": "Window",
+    "rectangle": {
+      "x": 692,
+      "y": 1025,
+      "width": 1709,
+      "height": 962
+    },
+    "kind": "window"
+  },
+  {
+    "id": "14",
+    "name": "Windows PowerShell",
+    "title": "Windows PowerShell",
+    "class_name": "CASCADIA_HOSTING_WINDOW_CLASS",
+    "control_type": "Window",
+    "rectangle": {
+      "x": 141,
+      "y": 152,
+      "width": 1752,
+      "height": 936
+    },
+    "kind": "window"
+  },
+  {
+    "id": "15",
+    "name": "DeepSeek 开放平台 和另外 9 个页面 - 用户配置 1 - Microsoft​ Edge",
+    "title": "DeepSeek 开放平台 和另外 9 个页面 - 用户配置 1 - Microsoft​ Edge",
+    "class_name": "Chrome_WidgetWin_1",
+    "control_type": "Window",
+    "rectangle": {
+      "x": 0,
+      "y": 0,
+      "width": 0,
+      "height": 0
+    },
+    "kind": "window"
+  },
+  {
+    "id": "16",
+    "name": "xumin - 文件资源管理器",
+    "title": "xumin - 文件资源管理器",
+    "class_name": "CabinetWClass",
+    "control_type": "Window",
+    "rectangle": {
+      "x": 1519,
+      "y": 211,
+      "width": 1709,
+      "height": 962
+    },
+    "kind": "window"
+  },
+  {
+    "id": "17",
+    "name": "MINGW64:/d/open-source/ZonUI-3B                                                  ",
+    "title": "MINGW64:/d/open-source/ZonUI-3B                                                  ",
+    "class_name": "mintty",
+    "control_type": "Window",
+    "rectangle": {
+      "x": 57,
+      "y": 1313,
+      "width": 1018,
+      "height": 698
+    },
+    "kind": "window"
+  },
+  {
+    "id": "18",
+    "name": "win-fast - 文件资源管理器",
+    "title": "win-fast - 文件资源管理器",
+    "class_name": "CabinetWClass",
+    "control_type": "Window",
+    "rectangle": {
+      "x": 0,
+      "y": 0,
+      "width": 0,
+      "height": 0
+    },
+    "kind": "window"
+  },
+  {
+    "id": "19",
+    "name": "MINGW64:/                                                  ",
+    "title": "MINGW64:/                                                  ",
+    "class_name": "mintty",
+    "control_type": "Window",
+    "rectangle": {
+      "x": 144,
+      "y": 111,
+      "width": 831,
+      "height": 538
+    },
+    "kind": "window"
+  },
+  {
+    "id": "20",
+    "name": "work - 文件资源管理器",
+    "title": "work - 文件资源管理器",
+    "class_name": "CabinetWClass",
+    "control_type": "Window",
+    "rectangle": {
+      "x": 0,
+      "y": 0,
+      "width": 0,
+      "height": 0
+    },
+    "kind": "window"
+  },
+  {
+    "id": "21",
+    "name": "设置",
+    "title": "设置",
+    "class_name": "ApplicationFrameWindow",
+    "control_type": "Window",
+    "rectangle": {
+      "x": 212,
+      "y": 304,
+      "width": 811,
+      "height": 627
+    },
+    "kind": "window"
+  },
+  {
+    "id": "22",
+    "name": "release - 文件资源管理器",
+    "title": "release - 文件资源管理器",
+    "class_name": "CabinetWClass",
+    "control_type": "Window",
+    "rectangle": {
+      "x": 0,
+      "y": 0,
+      "width": 0,
+      "height": 0
+    },
+    "kind": "window"
+  },
+  {
+    "id": "23",
+    "name": "GitHub - microsoft/UFO: UFO³: Weaving the Digital Agent Galaxy · GitHub - 豆包浏览器",
+    "title": "GitHub - microsoft/UFO: UFO³: Weaving the Digital Agent Galaxy · GitHub - 豆包浏览器",
+    "class_name": "Chrome_WidgetWin_1",
+    "control_type": "Pane",
+    "rectangle": {
+      "x": 0,
+      "y": 0,
+      "width": 0,
+      "height": 0
+    },
+    "kind": "window"
+  },
+  {
+    "id": "24",
+    "name": "ubuntu@VM-0-8-ubuntu: ~                                                  ",
+    "title": "ubuntu@VM-0-8-ubuntu: ~                                                  ",
+    "class_name": "mintty",
+    "control_type": "Window",
+    "rectangle": {
+      "x": 0,
+      "y": 0,
+      "width": 0,
+      "height": 0
+    },
+    "kind": "window"
+  },
+  {
+    "id": "25",
+    "name": "ubuntu@VM-4-6-ubuntu: ~                                                  ",
+    "title": "ubuntu@VM-4-6-ubuntu: ~                                                  ",
+    "class_name": "mintty",
+    "control_type": "Window",
+    "rectangle": {
+      "x": 0,
+      "y": 0,
+      "width": 0,
+      "height": 0
+    },
+    "kind": "window"
+  },
+  {
+    "id": "26",
+    "name": "MINGW64:/                                                  ",
+    "title": "MINGW64:/                                                  ",
+    "class_name": "mintty",
+    "control_type": "Window",
+    "rectangle": {
+      "x": 0,
+      "y": 0,
+      "width": 0,
+      "height": 0
+    },
+    "kind": "window"
+  },
+  {
+    "id": "27",
+    "name": "国内适用数据源分析 - DeepSeek - Google Chrome",
+    "title": "国内适用数据源分析 - DeepSeek - Google Chrome",
+    "class_name": "Chrome_WidgetWin_1",
+    "control_type": "Window",
+    "rectangle": {
+      "x": 0,
+      "y": 0,
+      "width": 0,
+      "height": 0
+    },
+    "kind": "window"
+  },
+  {
+    "id": "28",
+    "name": "AI算力共享平台",
+    "title": "AI算力共享平台",
+    "class_name": "Tauri Window",
+    "control_type": "Window",
+    "rectangle": {
+      "x": 0,
+      "y": 0,
+      "width": 0,
+      "height": 0
+    },
+    "kind": "window"
+  },
+  {
+    "id": "29",
+    "name": "MINGW64:/d/open-source/UFO                                                  ",
+    "title": "MINGW64:/d/open-source/UFO                                                  ",
+    "class_name": "mintty",
+    "control_type": "Window",
+    "rectangle": {
+      "x": 0,
+      "y": 0,
+      "width": 0,
+      "height": 0
+    },
+    "kind": "window"
+  },
+  {
+    "id": "30",
+    "name": "*Unsaved Workflow - ComfyUI",
+    "title": "*Unsaved Workflow - ComfyUI",
+    "class_name": "Chrome_WidgetWin_1",
+    "control_type": "Pane",
+    "rectangle": {
+      "x": 0,
+      "y": 0,
+      "width": 0,
+      "height": 0
+    },
+    "kind": "window"
+  }
+]

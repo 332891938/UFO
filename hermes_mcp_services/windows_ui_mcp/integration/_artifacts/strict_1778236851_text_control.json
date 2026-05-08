@@ -1,0 +1,13 @@
+{
+  "kind": "control",
+  "id": "1",
+  "name": "文本编辑器",
+  "type": "Document",
+  "rect": [
+    294,
+    397,
+    2151,
+    1491
+  ],
+  "source": "uia"
+}

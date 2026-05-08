@@ -1,0 +1,78 @@
+{
+  "run_id": "debug_1778233414",
+  "server_url": "http://127.0.0.1:8036/mcp",
+  "status": "failed",
+  "events": [
+    {
+      "stage": "run_shell",
+      "arguments": {
+        "bash_command": "notepad.exe"
+      }
+    },
+    {
+      "stage": "run_shell:ok"
+    },
+    {
+      "stage": "get_desktop_app_info",
+      "arguments": {
+        "remove_empty": true,
+        "refresh_app_windows": true
+      }
+    },
+    {
+      "stage": "get_desktop_app_info:ok"
+    },
+    {
+      "stage": "select_application_window",
+      "arguments": {
+        "id": "1",
+        "name": "无标题 - Notepad"
+      }
+    },
+    {
+      "stage": "select_application_window:ok"
+    },
+    {
+      "stage": "capture_window_screenshot",
+      "arguments": {}
+    },
+    {
+      "stage": "capture_window_screenshot:error",
+      "traceback": "Traceback (most recent call last):\n  File \"D:\\open-source\\UFO\\hermes_mcp_services\\windows_ui_mcp\\integration\\debug_mcp_strict_flow.py\", line 150, in _call_tool\n    result = await asyncio.wait_for(client.call_tool(name, args), timeout=timeout)\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Python314\\Lib\\asyncio\\tasks.py\", line 488, in wait_for\n    return await fut\n           ^^^^^^^^^\n  File \"C:\\Users\\xumin\\AppData\\Roaming\\Python\\Python314\\site-packages\\fastmcp\\client\\mixins\\tools.py\", line 287, in call_tool\n    return await self._parse_call_tool_result(\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n        name, result, raise_on_error=raise_on_error\n        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n    )\n    ^\n  File \"C:\\Users\\xumin\\AppData\\Roaming\\Python\\Python314\\site-packages\\fastmcp\\client\\mixins\\tools.py\", line 181, in _parse_call_tool_result\n    return await _parse_call_tool_result(\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n    ...<6 lines>...\n    )\n    ^\n  File \"C:\\Users\\xumin\\AppData\\Roaming\\Python\\Python314\\site-packages\\fastmcp\\client\\mixins\\tools.py\", line 393, in _parse_call_tool_result\n    raise ToolError(msg)\nfastmcp.exceptions.ToolError: Error calling tool 'capture_window_screenshot': 'WindowsMCPService' object has no attribute '_window_class_name'\n"
+    }
+  ],
+  "windows_count": 37,
+  "selected_window": {
+    "id": "1",
+    "name": "无标题 - Notepad",
+    "title": "无标题 - Notepad",
+    "class_name": "Notepad",
+    "control_type": "Window",
+    "rectangle": {
+      "x": 627,
+      "y": 627,
+      "width": 1875,
+      "height": 1263
+    },
+    "kind": "window"
+  },
+  "selected_result": {
+    "success": true,
+    "root_name": "无标题 - Notepad",
+    "window_info": {
+      "id": "1",
+      "name": "无标题 - Notepad",
+      "title": "无标题 - Notepad",
+      "class_name": "Notepad",
+      "control_type": "Window",
+      "rectangle": {
+        "x": 627,
+        "y": 627,
+        "width": 1875,
+        "height": 1263
+      },
+      "kind": "window"
+    }
+  },
+  "fatal_traceback": "Traceback (most recent call last):\n  File \"D:\\open-source\\UFO\\hermes_mcp_services\\windows_ui_mcp\\integration\\debug_mcp_strict_flow.py\", line 210, in main\n    before = await _call_tool(client, report, \"capture_window_screenshot\", {})\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"D:\\open-source\\UFO\\hermes_mcp_services\\windows_ui_mcp\\integration\\debug_mcp_strict_flow.py\", line 150, in _call_tool\n    result = await asyncio.wait_for(client.call_tool(name, args), timeout=timeout)\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Python314\\Lib\\asyncio\\tasks.py\", line 488, in wait_for\n    return await fut\n           ^^^^^^^^^\n  File \"C:\\Users\\xumin\\AppData\\Roaming\\Python\\Python314\\site-packages\\fastmcp\\client\\mixins\\tools.py\", line 287, in call_tool\n    return await self._parse_call_tool_result(\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n        name, result, raise_on_error=raise_on_error\n        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n    )\n    ^\n  File \"C:\\Users\\xumin\\AppData\\Roaming\\Python\\Python314\\site-packages\\fastmcp\\client\\mixins\\tools.py\", line 181, in _parse_call_tool_result\n    return await _parse_call_tool_result(\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n    ...<6 lines>...\n    )\n    ^\n  File \"C:\\Users\\xumin\\AppData\\Roaming\\Python\\Python314\\site-packages\\fastmcp\\client\\mixins\\tools.py\", line 393, in _parse_call_tool_result\n    raise ToolError(msg)\nfastmcp.exceptions.ToolError: Error calling tool 'capture_window_screenshot': 'WindowsMCPService' object has no attribute '_window_class_name'\n"
+}

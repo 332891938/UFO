@@ -83,6 +83,24 @@ _DANGEROUS_CLI_PATTERNS: List[re.Pattern] = [
     re.compile(r">{1,2}\s*[/\\]", re.IGNORECASE),
 ]
 
+DEFAULT_CONTROL_LIST: List[str] = [
+    "Button",
+    "Edit",
+    "TabItem",
+    "Document",
+    "ListItem",
+    "MenuItem",
+    "ScrollBar",
+    "TreeItem",
+    "Hyperlink",
+    "ComboBox",
+    "RadioButton",
+    "Spinner",
+    "CheckBox",
+    "Group",
+    "Text",
+]
+
 
 class WindowsMCPService:
     def __init__(self, state: Optional[WindowsUIState] = None):
@@ -122,11 +140,72 @@ class WindowsMCPService:
             except Exception:
                 return ""
 
+    @staticmethod
+    def _normalize_text_output(value: Any) -> str:
+        if isinstance(value, str):
+            return value
+        if isinstance(value, (list, tuple)):
+            return "\n".join(str(item) for item in value)
+        return str(value or "")
+
+    @staticmethod
+    def _window_class_name(window: Any) -> str:
+        try:
+            return getattr(window.element_info, "class_name", "") or ""
+        except Exception:
+            try:
+                return window.class_name() or ""
+            except Exception:
+                return ""
+
     def _selected_window_required(self) -> Any:
+        if getattr(self.state, "selected_window_info", {}):
+            refreshed = self._resolve_selected_window()
+            if refreshed is not None:
+                self.state.selected_window = refreshed
         if self.state.selected_window is None:
             raise ValueError(
                 "No selected window. Please call select_application_window first."
             )
+        return self.state.selected_window
+
+    def _resolve_selected_window(self) -> Any:
+        info = getattr(self.state, "selected_window_info", {}) or {}
+        if not info:
+            return self.state.selected_window
+
+        selected_name = str(info.get("name") or info.get("title") or "")
+        selected_title = str(info.get("title") or info.get("name") or "")
+        selected_class = str(info.get("class_name") or "")
+
+        try:
+            self.state.window_dict = self.state.control_inspector.get_desktop_app_dict(
+                remove_empty=False
+            )
+        except Exception:
+            return self.state.selected_window
+
+        best_window = None
+        best_score = -1
+        for _, window in self.state.window_dict.items():
+            name = self._window_name(window)
+            title = name
+            class_name = self._window_class_name(window)
+            score = 0
+            if selected_class and class_name == selected_class:
+                score += 100
+            if selected_name and name == selected_name:
+                score += 100
+            if selected_title and title == selected_title:
+                score += 100
+            if selected_name and selected_name in name:
+                score += 10
+            if score > best_score:
+                best_score = score
+                best_window = window
+
+        if best_window is not None and best_score > 0:
+            return best_window
         return self.state.selected_window
 
     @staticmethod
@@ -143,6 +222,73 @@ class WindowsMCPService:
         if control is None:
             raise ValueError(f"Control id '{control_id}' not found.")
         return control
+
+    def _looks_like_placeholder_readback(
+        self, text: str, control: Any, requested_name: str
+    ) -> bool:
+        normalized = (text or "").strip()
+        if not normalized:
+            return True
+
+        control_name = (self._control_name(control) or "").strip()
+        requested_name = (requested_name or "").strip()
+        candidates = {
+            control_name,
+            requested_name,
+            f"['{control_name}']" if control_name else "",
+            f'["{control_name}"]' if control_name else "",
+            f"['{requested_name}']" if requested_name else "",
+            f'["{requested_name}"]' if requested_name else "",
+        }
+        return normalized in {item for item in candidates if item}
+
+    @staticmethod
+    def _clipboard_get_text() -> str:
+        import win32clipboard
+
+        win32clipboard.OpenClipboard()
+        try:
+            try:
+                data = win32clipboard.GetClipboardData(win32clipboard.CF_UNICODETEXT)
+            except TypeError:
+                data = win32clipboard.GetClipboardData()
+            return str(data or "")
+        finally:
+            win32clipboard.CloseClipboard()
+
+    @staticmethod
+    def _clipboard_set_text(text: str) -> None:
+        import win32clipboard
+
+        win32clipboard.OpenClipboard()
+        try:
+            win32clipboard.EmptyClipboard()
+            win32clipboard.SetClipboardText(text or "", win32clipboard.CF_UNICODETEXT)
+        finally:
+            win32clipboard.CloseClipboard()
+
+    def _read_control_text_via_clipboard(self, control: Any) -> str:
+        previous_clipboard: Optional[str]
+        try:
+            previous_clipboard = self._clipboard_get_text()
+        except Exception:
+            previous_clipboard = None
+
+        try:
+            self._clipboard_set_text("")
+            control.set_focus()
+            time.sleep(0.05)
+            pyautogui.hotkey("ctrl", "a")
+            time.sleep(0.05)
+            pyautogui.hotkey("ctrl", "c")
+            time.sleep(0.15)
+            return self._clipboard_get_text().strip()
+        finally:
+            if previous_clipboard is not None:
+                try:
+                    self._clipboard_set_text(previous_clipboard)
+                except Exception:
+                    pass
 
     def _initialize_puppeteer_for_window(self, window: UIAWrapper) -> None:
         self.state.puppeteer = AppPuppeteer(
@@ -222,10 +368,10 @@ class WindowsMCPService:
     ) -> TargetInfo:
         return TargetInfo(
             kind=target.kind.value if hasattr(target.kind, "value") else str(target.kind),
-            id=target_id or target.id,
-            name=target.name,
-            type=target.type,
-            rect=list(target.rect) if target.rect else None,
+            id=target_id or getattr(target, "id", None),
+            name=getattr(target, "name", ""),
+            type=getattr(target, "type", None),
+            rect=list(getattr(target, "rect", None) or []) or None,
             source=source,
         )
 
@@ -287,7 +433,7 @@ class WindowsMCPService:
                     name=target.name,
                     type=target.type,
                     rect=target.rect,
-                    source=target.source or "uia",
+                    source=getattr(target, "source", None) or "uia",
                 )
             )
 
@@ -408,6 +554,7 @@ class WindowsMCPService:
         except Exception:
             pass
         self.state.selected_window = window
+        setattr(self.state, "selected_window_info", self._window_to_dict(id, window))
         self.state.control_dict = {}
         self._initialize_puppeteer_for_window(window)
         result = {
@@ -428,7 +575,9 @@ class WindowsMCPService:
     ) -> List[Dict[str, Any]]:
         window = self._selected_window_required()
         controls_list = self.state.control_inspector.find_control_elements_in_descendants(
-            window
+            window,
+            control_type_list=DEFAULT_CONTROL_LIST,
+            class_name_list=DEFAULT_CONTROL_LIST,
         )
         if max_controls > 0:
             controls_list = controls_list[:max_controls]
@@ -523,8 +672,8 @@ class WindowsMCPService:
                 element_type=element_type,
             )
             if target is not None:
-                # 添加到控件字典
-                return self._append_targets_to_control_dict([target])[0]
+                local_target = self._local_target_from_automator(target, source="zonui3b")
+                return self._append_targets_to_control_dict([local_target])[0]
             return None
         finally:
             try:
@@ -607,50 +756,8 @@ class WindowsMCPService:
             field_list=[],
             max_controls=max_uia_controls,
         )
-        current_control_dict = dict(self.state.control_dict)
-
-        uia_automator_targets = [
-            AutomatorTargetInfo(
-                kind=TargetKind.CONTROL,
-                type=t.type or "Button",
-                name=t.name or "",
-                rect=t.rect or [0, 0, 0, 0],
-            )
-            for t in uia_targets
-        ]
-
-        merged = self.state.control_inspector._merge_target_lists(
-            uia_automator_targets,
-            [],  # ZonUI-3B不参与枚举
-        )
-
-        uia_automator_targets = [
-            AutomatorTargetInfo(
-                kind=TargetKind.CONTROL,
-                id=target.id,
-                name=target.name,
-                type=target.type,
-                rect=target.rect,
-            )
-            for target in uia_targets
-        ]
-        # ZonUI-3B不做全屏解析，仅保留UIA枚举结果
-        merged_targets = merged
-
-        self.state.control_dict = dict(current_control_dict)
-        merged_local_targets: List[TargetInfo] = []
-        for target in merged_targets:
-            if target.id and target.id in self.state.control_dict:
-                merged_local_targets.append(
-                    self._local_target_from_automator(target, source="uia")
-                )
-            else:
-                appended = self._append_targets_to_control_dict(
-                    [self._local_target_from_automator(target, source="uia")]
-                )
-                merged_local_targets.extend(appended)
-
-        return merged_local_targets
+        # ZonUI-3B在当前方案中只负责定点查找，不参与全量枚举。
+        return uia_targets
 
     def click_input(
         self, id: str, name: str, button: str = "left", double: bool = False
@@ -763,9 +870,19 @@ class WindowsMCPService:
     def texts(self, id: str, name: str) -> str:
         control = self._control_required(id)
         warning = self._verify_name(self._control_name(control), name)
-        text = str(
+        text = self._normalize_text_output(
             self._execute_ui_action("texts", {}, target_id=id, target_name=name) or ""
         )
+        control_type = self._control_type(control).lower()
+        if control_type in {"document", "edit"} and self._looks_like_placeholder_readback(
+            text, control, name
+        ):
+            try:
+                clipboard_text = self._read_control_text_via_clipboard(control)
+            except Exception:
+                clipboard_text = ""
+            if clipboard_text:
+                text = clipboard_text
         return f"{warning} {text}".strip() if warning else text
 
     async def wait(self, seconds: float) -> str:

@@ -1,0 +1,7 @@
+{
+  "run_id": "debug_1778236216",
+  "server_url": "http://127.0.0.1:8037/mcp",
+  "status": "failed",
+  "events": [],
+  "fatal_traceback": "Traceback (most recent call last):\n  File \"D:\\open-source\\UFO\\hermes_mcp_services\\windows_ui_mcp\\integration\\debug_mcp_strict_flow.py\", line 184, in main\n    windows = get_windows(server_url)\n  File \"D:\\open-source\\UFO\\hermes_mcp_services\\windows_ui_mcp\\integration\\window_launch_utils.py\", line 11, in get_windows\n    windows = run_async(\n        call_tool(\n    ...<3 lines>...\n        )\n    )\n  File \"D:\\open-source\\UFO\\hermes_mcp_services\\windows_ui_mcp\\integration\\conftest.py\", line 59, in run_async\n    return asyncio.run(awaitable)\n           ~~~~~~~~~~~^^^^^^^^^^^\n  File \"C:\\Python314\\Lib\\asyncio\\runners.py\", line 200, in run\n    raise RuntimeError(\n        \"asyncio.run() cannot be called from a running event loop\")\nRuntimeError: asyncio.run() cannot be called from a running event loop\n"
+}

@@ -1,0 +1,14 @@
+{
+  "id": "21",
+  "name": "Notepad++ - 文件资源管理器",
+  "title": "Notepad++ - 文件资源管理器",
+  "class_name": "CabinetWClass",
+  "control_type": "Window",
+  "rectangle": {
+    "x": 0,
+    "y": 0,
+    "width": 0,
+    "height": 0
+  },
+  "kind": "window"
+}

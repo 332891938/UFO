@@ -9,7 +9,7 @@ def test_ensure_zonui3b_grounding_caches(service, fake_state, monkeypatch):
     created = []
 
     class FakeGrounding:
-        def __init__(self):
+        def __init__(self, service_url=None):
             created.append(1)
 
     monkeypatch.setattr("mcp_service.ZonUI3BGrounding", FakeGrounding)
@@ -70,8 +70,6 @@ def test_inject_zonui3b_controls_uses_append(service, fake_state, monkeypatch):
 
 def test_list_controls_hybrid_uia_only(service, fake_state, monkeypatch):
     """list_controls_hybrid 应使用纯UIA枚举，不依赖外部服务。"""
-    fake_state.control_dict = {"1": FakeControl(name="UIA")}
-
     monkeypatch.setattr(
         service,
         "get_app_window_controls_target_info",
@@ -79,9 +77,6 @@ def test_list_controls_hybrid_uia_only(service, fake_state, monkeypatch):
             TargetInfo(kind="control", id="1", name="UIA", type="Button", rect=[0, 0, 1, 1], source="uia")
         ],
     )
-
-    # merge_target_lists 直接返回输入
-    fake_state.control_inspector._merge_target_lists = lambda uia_list, zonui3b_list: uia_list
 
     result = service.list_controls_hybrid(max_uia_controls=100)
 

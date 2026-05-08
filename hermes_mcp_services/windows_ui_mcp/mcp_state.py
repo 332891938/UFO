@@ -29,5 +29,6 @@ class WindowsUIState:
     puppeteer: Optional[AppPuppeteer] = None
     grounding_service: Optional["ZonUI3BGrounding"] = None
     selected_window: Optional[UIAWrapper] = None
+    selected_window_info: Dict[str, Any] = field(default_factory=dict)
     window_dict: Dict[str, Any] = field(default_factory=dict)
     control_dict: Dict[str, Any] = field(default_factory=dict)
