@@ -158,6 +158,39 @@ class WindowsMCPService:
             except Exception:
                 return ""
 
+    @staticmethod
+    def _resolve_screenshot_save_path(save_path: str = "") -> str:
+        if not save_path:
+            temp_file = tempfile.NamedTemporaryFile(delete=False, suffix=".png")
+            temp_file.close()
+            return temp_file.name
+
+        resolved = Path(save_path).expanduser().resolve()
+        target = resolved
+        if not resolved.suffix:
+            validate_path_not_sensitive(str(resolved))
+            resolved.mkdir(parents=True, exist_ok=True)
+            target = resolved / f"screenshot_{int(time.time() * 1000)}.png"
+        else:
+            validate_path_not_sensitive(str(resolved.parent))
+            resolved.parent.mkdir(parents=True, exist_ok=True)
+
+        if target.suffix.lower() != ".png":
+            raise ValueError("Screenshot save_path must end with .png")
+        return str(target)
+
+    def _format_screenshot_result(
+        self, screenshot: Any, output_mode: str = "data_url", save_path: str = ""
+    ) -> str:
+        mode = (output_mode or "data_url").strip().lower()
+        if mode == "data_url":
+            return self.state.photographer.encode_image(screenshot)
+        if mode == "file_path":
+            path = self._resolve_screenshot_save_path(save_path)
+            screenshot.save(path, format="PNG")
+            return path
+        raise ValueError("output_mode must be 'data_url' or 'file_path'")
+
     def _selected_window_required(self) -> Any:
         if getattr(self.state, "selected_window_info", {}):
             refreshed = self._resolve_selected_window()
@@ -608,16 +641,23 @@ class WindowsMCPService:
             for control_id, control in self.state.control_dict.items()
         ]
 
-    def capture_window_screenshot(self) -> str:
+    def capture_window_screenshot(
+        self, output_mode: str = "data_url", save_path: str = ""
+    ) -> str:
         window = self._selected_window_required()
         screenshot = self.state.photographer.capture_app_window_screenshot(window)
-        return self.state.photographer.encode_image(screenshot)
+        return self._format_screenshot_result(screenshot, output_mode, save_path)
 
-    def capture_desktop_screenshot(self, all_screens: bool = True) -> str:
+    def capture_desktop_screenshot(
+        self,
+        all_screens: bool = True,
+        output_mode: str = "data_url",
+        save_path: str = "",
+    ) -> str:
         screenshot = self.state.photographer.capture_desktop_screen_screenshot(
             all_screens=all_screens
         )
-        return self.state.photographer.encode_image(screenshot)
+        return self._format_screenshot_result(screenshot, output_mode, save_path)
 
     def get_ui_tree(self) -> Dict[str, Any]:
         window = self._selected_window_required()

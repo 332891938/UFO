@@ -1,3 +1,5 @@
+from pathlib import Path
+
 from test_support import FakeControl, FakeRect
 from mcp_service import DEFAULT_CONTROL_LIST
 
@@ -115,6 +117,32 @@ def test_capture_window_screenshot_uses_photographer(service, fake_state):
     fake_state.photographer.encode_image.assert_called_once_with("image")
 
 
+def test_capture_window_screenshot_can_save_to_local_path(service, fake_state, tmp_path):
+    fake_state.selected_window = FakeControl(name="Window", control_type="Window")
+
+    class DummyImage:
+        def __init__(self):
+            self.saved = []
+
+        def save(self, path, format="PNG"):
+            Path(path).write_bytes(b"png")
+            self.saved.append((path, format))
+
+    image = DummyImage()
+    fake_state.photographer.capture_app_window_screenshot.return_value = image
+
+    save_path = tmp_path / "captures" / "window.png"
+    result = service.capture_window_screenshot(
+        output_mode="file_path",
+        save_path=str(save_path),
+    )
+
+    assert result == str(save_path.resolve())
+    assert save_path.exists()
+    assert image.saved == [(str(save_path.resolve()), "PNG")]
+    fake_state.photographer.encode_image.assert_not_called()
+
+
 def test_capture_window_screenshot_refreshes_selected_window_from_cached_info(
     service, fake_state
 ):
@@ -142,6 +170,31 @@ def test_capture_window_screenshot_refreshes_selected_window_from_cached_info(
     fake_state.photographer.capture_app_window_screenshot.assert_called_once_with(
         fresh_window
     )
+
+
+def test_capture_desktop_screenshot_can_save_to_directory(service, fake_state, tmp_path):
+    class DummyImage:
+        def __init__(self):
+            self.saved = []
+
+        def save(self, path, format="PNG"):
+            Path(path).write_bytes(b"png")
+            self.saved.append((path, format))
+
+    image = DummyImage()
+    fake_state.photographer.capture_desktop_screen_screenshot.return_value = image
+
+    result = service.capture_desktop_screenshot(
+        all_screens=False,
+        output_mode="file_path",
+        save_path=str(tmp_path),
+    )
+
+    saved_path = Path(result)
+    assert saved_path.exists()
+    assert saved_path.parent == tmp_path.resolve()
+    assert image.saved == [(str(saved_path), "PNG")]
+    fake_state.photographer.encode_image.assert_not_called()
 
 
 def test_texts_falls_back_to_clipboard_for_document_controls(service, fake_state, monkeypatch):

@@ -68,3 +68,54 @@ def test_find_control_on_screen_tool_serializes_targetinfo(service, monkeypatch)
     result = asyncio.run(fake_mcp.funcs["find_control_on_screen"]("File", "Button"))
 
     assert result == {"id": "9", "name": "File", "type": "Button", "kind": "control"}
+
+
+def test_capture_window_screenshot_tool_passes_output_options(service, monkeypatch):
+    fake_mcp = FakeMCP()
+    register_tools(fake_mcp, service)
+    captured = {}
+
+    def fake_capture(output_mode="data_url", save_path=""):
+        captured["output_mode"] = output_mode
+        captured["save_path"] = save_path
+        return "C:\\temp\\shot.png"
+
+    monkeypatch.setattr(service, "capture_window_screenshot", fake_capture)
+
+    result = fake_mcp.funcs["capture_window_screenshot"](
+        output_mode="file_path",
+        save_path="C:\\temp\\shot.png",
+    )
+
+    assert result == "C:\\temp\\shot.png"
+    assert captured == {
+        "output_mode": "file_path",
+        "save_path": "C:\\temp\\shot.png",
+    }
+
+
+def test_capture_desktop_screenshot_tool_passes_output_options(service, monkeypatch):
+    fake_mcp = FakeMCP()
+    register_tools(fake_mcp, service)
+    captured = {}
+
+    def fake_capture(all_screens=True, output_mode="data_url", save_path=""):
+        captured["all_screens"] = all_screens
+        captured["output_mode"] = output_mode
+        captured["save_path"] = save_path
+        return "C:\\temp\\desktop.png"
+
+    monkeypatch.setattr(service, "capture_desktop_screenshot", fake_capture)
+
+    result = fake_mcp.funcs["capture_desktop_screenshot"](
+        all_screens=False,
+        output_mode="file_path",
+        save_path="C:\\temp\\desktop.png",
+    )
+
+    assert result == "C:\\temp\\desktop.png"
+    assert captured == {
+        "all_screens": False,
+        "output_mode": "file_path",
+        "save_path": "C:\\temp\\desktop.png",
+    }

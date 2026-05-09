@@ -76,14 +76,35 @@ def register_tools(mcp: FastMCP, service: WindowsMCPService) -> None:
         )
 
     @mcp.tool()
-    def capture_window_screenshot() -> str:
-        return service.capture_window_screenshot()
+    def capture_window_screenshot(
+        output_mode: str = Field(
+            "data_url",
+            description="Screenshot return mode: 'data_url' returns base64 data URI; 'file_path' saves locally and returns the PNG path.",
+        ),
+        save_path: str = Field(
+            "",
+            description="Optional local PNG path or directory used when output_mode='file_path'. Empty means auto-generate a temp PNG path.",
+        ),
+    ) -> str:
+        return service.capture_window_screenshot(output_mode=output_mode, save_path=save_path)
 
     @mcp.tool()
     def capture_desktop_screenshot(
         all_screens: bool = Field(True, description="Capture all screens when true."),
+        output_mode: str = Field(
+            "data_url",
+            description="Screenshot return mode: 'data_url' returns base64 data URI; 'file_path' saves locally and returns the PNG path.",
+        ),
+        save_path: str = Field(
+            "",
+            description="Optional local PNG path or directory used when output_mode='file_path'. Empty means auto-generate a temp PNG path.",
+        ),
     ) -> str:
-        return service.capture_desktop_screenshot(all_screens)
+        return service.capture_desktop_screenshot(
+            all_screens=all_screens,
+            output_mode=output_mode,
+            save_path=save_path,
+        )
 
     @mcp.tool()
     def get_ui_tree() -> Dict[str, Any]:
