@@ -1,7 +1,0 @@
-{
-  "test_name": "test_mcp_zonui3b_deep_flow_real",
-  "status": "passed",
-  "timestamp": 1778240154,
-  "server_url": "http://127.0.0.1:8037/mcp",
-  "query": "Save button"
-}

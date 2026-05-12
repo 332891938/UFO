@@ -1,7 +1,0 @@
-{
-  "test_name": "test_mcp_text_entry_flow_real",
-  "status": "passed",
-  "started_at": 1778238960,
-  "finished_at": 1778238968,
-  "server_url": "http://127.0.0.1:8037/mcp"
-}

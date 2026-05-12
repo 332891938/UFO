@@ -71,3 +71,6 @@ ufo/config/config_llm.yaml
 !config/*/device.yaml
 !config/*/network.yaml
 node_modules
+
+# Ignore windows_ui_mcp real/integration test workspace
+hermes_mcp_services/windows_ui_mcp/integration/

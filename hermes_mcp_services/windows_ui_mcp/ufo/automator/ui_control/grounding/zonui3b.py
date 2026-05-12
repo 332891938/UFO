@@ -49,20 +49,13 @@ class ZonUI3BGrounding(BasicGrounding):
             from ufo.automator.ui_control.grounding.zonui3b_service import ZonUI3BService
             self._local_service = ZonUI3BService.get_instance(model_path)
 
-    def predict(self, image_path: str, query: str = "") -> Dict[str, Any]:
-        if not query:
-            return {"success": False, "error": "Empty query"}
+    def _post_json(self, endpoint: str, payload: Dict[str, Any]) -> Dict[str, Any]:
+        import json as _json
+        import urllib.request
 
-        if self.service_url:
-            return self._predict_http(image_path, query)
-        else:
-            return self._predict_local(image_path, query)
-
-    def _predict_http(self, image_path: str, query: str) -> Dict[str, Any]:
-        import urllib.request, json as _json
-        data = _json.dumps({"image_path": image_path, "query": query}).encode()
+        data = _json.dumps(payload).encode()
         req = urllib.request.Request(
-            f"{self.service_url}/predict",
+            f"{self.service_url}{endpoint}",
             data=data,
             headers={"Content-Type": "application/json"},
         )
@@ -72,6 +65,43 @@ class ZonUI3BGrounding(BasicGrounding):
         except Exception as e:
             return {"success": False, "error": str(e)}
 
+    def predict(
+        self,
+        image_path: str,
+        query: str = "",
+        annotate: bool = False,
+        output_path: str = "",
+    ) -> Dict[str, Any]:
+        if not query:
+            return {"success": False, "error": "Empty query"}
+
+        if self.service_url:
+            return self._predict_http(
+                image_path,
+                query,
+                annotate=annotate,
+                output_path=output_path,
+            )
+        else:
+            return self._predict_local(image_path, query)
+
+    def _predict_http(
+        self,
+        image_path: str,
+        query: str,
+        annotate: bool = False,
+        output_path: str = "",
+    ) -> Dict[str, Any]:
+        payload: Dict[str, Any] = {
+            "image_path": image_path,
+            "query": query,
+        }
+        if annotate:
+            payload["annotate"] = True
+        if output_path:
+            payload["output_path"] = output_path
+        return self._post_json("/predict", payload)
+
     def _predict_local(self, image_path: str, query: str) -> Dict[str, Any]:
         try:
             norm_x, norm_y, abs_x, abs_y = self._local_service.predict(image_path, query)
@@ -79,8 +109,60 @@ class ZonUI3BGrounding(BasicGrounding):
         except Exception as e:
             return {"success": False, "error": str(e)}
 
-    def find_element(self, screenshot_path, description, application_window_info=None, element_type="Button"):
-        result = self.predict(screenshot_path, description)
+    def describe_window(
+        self,
+        image_path: str,
+        query: str = "",
+        context: str = "",
+    ) -> Dict[str, Any]:
+        if self.service_url:
+            payload: Dict[str, Any] = {"image_path": image_path}
+            if query:
+                payload["query"] = query
+            if context:
+                payload["context"] = context
+            return self._post_json("/describe", payload)
+        return {
+            "success": False,
+            "error": "describe_window requires ZonUI-3B HTTP service mode.",
+        }
+
+    def inspect_window(
+        self,
+        image_path: str,
+        checks: List[str],
+        context: str = "",
+    ) -> Dict[str, Any]:
+        if not checks:
+            return {"success": False, "error": "Empty checks"}
+        if self.service_url:
+            payload: Dict[str, Any] = {
+                "image_path": image_path,
+                "checks": checks,
+            }
+            if context:
+                payload["context"] = context
+            return self._post_json("/inspect", payload)
+        return {
+            "success": False,
+            "error": "inspect_window requires ZonUI-3B HTTP service mode.",
+        }
+
+    def find_element(
+        self,
+        screenshot_path,
+        description,
+        application_window_info=None,
+        element_type="Button",
+        annotate: bool = False,
+        output_path: str = "",
+    ):
+        result = self.predict(
+            screenshot_path,
+            description,
+            annotate=annotate,
+            output_path=output_path,
+        )
         if not result.get("success"):
             return None
 
@@ -113,10 +195,22 @@ class ZonUI3BGrounding(BasicGrounding):
                  "x0": int(abs_x - radius), "y0": int(abs_y - radius),
                  "x1": int(abs_x + radius), "y1": int(abs_y + radius)}]
 
-    def screen_parsing(self, screenshot_path, application_window_info=None, query=""):
+    def screen_parsing(
+        self,
+        screenshot_path,
+        application_window_info=None,
+        query="",
+        annotate: bool = False,
+        output_path: str = "",
+    ):
         if not query:
             return []
-        result = self.predict(screenshot_path, query)
+        result = self.predict(
+            screenshot_path,
+            query,
+            annotate=annotate,
+            output_path=output_path,
+        )
         if not result.get("success"):
             return []
         abs_x, abs_y = result["abs_x"], result["abs_y"]

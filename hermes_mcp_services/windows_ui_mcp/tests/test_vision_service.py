@@ -45,6 +45,31 @@ def test_parse_window_with_zonui3b_injects_controls(service, fake_state, monkeyp
     assert unlinked == ["temp.png"]
 
 
+def test_parse_window_with_zonui3b_passes_annotation_options(service, fake_state, monkeypatch):
+    fake_state.selected_window = FakeControl(name="Window", control_type="Window")
+    captured = {}
+
+    def fake_screen_parsing(*args, **kwargs):
+        captured.update(kwargs)
+        return []
+
+    grounding = SimpleNamespace(screen_parsing=fake_screen_parsing)
+    monkeypatch.setattr(service, "_ensure_zonui3b_grounding", lambda: grounding)
+    monkeypatch.setattr(service, "_capture_window_to_temp_file", lambda: "temp.png")
+    monkeypatch.setattr("mcp_service.os.unlink", lambda path: None)
+
+    result = service.parse_window_with_zonui3b(
+        query="Save button",
+        annotate=True,
+        output_path="D:\\temp\\annotated.png",
+    )
+
+    assert result == []
+    assert captured["query"] == "Save button"
+    assert captured["annotate"] is True
+    assert captured["output_path"] == "D:\\temp\\annotated.png"
+
+
 def test_parse_window_with_zonui3b_empty_query(service, fake_state, monkeypatch):
     """空查询应返回空列表。"""
     fake_state.selected_window = FakeControl(name="Window", control_type="Window")
@@ -110,3 +135,84 @@ def test_find_control_on_screen(service, fake_state, monkeypatch):
     result = service.find_control_on_screen(description="Save button")
 
     # 这里不深入验证返回细节，确保流程走通
+    assert result is not None
+
+
+def test_find_control_on_screen_passes_annotation_options(service, fake_state, monkeypatch):
+    fake_state.selected_window = FakeControl(name="Window", control_type="Window")
+    captured = {}
+
+    def fake_find_element(*args, **kwargs):
+        captured.update(kwargs)
+        return None
+
+    grounding = SimpleNamespace(find_element=fake_find_element)
+    monkeypatch.setattr(service, "_ensure_zonui3b_grounding", lambda: grounding)
+    monkeypatch.setattr(service, "_capture_window_to_temp_file", lambda: "temp.png")
+    monkeypatch.setattr("mcp_service.os.unlink", lambda path: None)
+
+    result = service.find_control_on_screen(
+        description="Save button",
+        annotate=True,
+        output_path="D:\\temp\\point.png",
+    )
+
+    assert result is None
+    assert captured["element_type"] == "Button"
+    assert captured["annotate"] is True
+    assert captured["output_path"] == "D:\\temp\\point.png"
+
+
+def test_describe_window_with_zonui3b(service, fake_state, monkeypatch):
+    fake_state.selected_window = FakeControl(name="Window", control_type="Window")
+    grounding = SimpleNamespace(
+        describe_window=lambda *args, **kwargs: {
+            "success": True,
+            "result": {
+                "window_summary": "代码编辑器",
+                "main_purpose": "编辑代码",
+            },
+        }
+    )
+    monkeypatch.setattr(service, "_ensure_zonui3b_grounding", lambda: grounding)
+    monkeypatch.setattr(service, "_capture_window_to_temp_file", lambda: "temp.png")
+    unlinked = []
+    monkeypatch.setattr("mcp_service.os.unlink", lambda path: unlinked.append(path))
+
+    result = service.describe_window_with_zonui3b(
+        query="请描述当前界面",
+        context="这是 VS Code 截图",
+    )
+
+    assert result["success"] is True
+    assert result["result"]["window_summary"] == "代码编辑器"
+    assert unlinked == ["temp.png"]
+
+
+def test_inspect_window_with_zonui3b(service, fake_state, monkeypatch):
+    fake_state.selected_window = FakeControl(name="Window", control_type="Window")
+    grounding = SimpleNamespace(
+        inspect_window=lambda *args, **kwargs: {
+            "success": True,
+            "result": {
+                "window_summary": "代码编辑器",
+                "main_purpose": "编辑代码",
+                "checks": [
+                    {"check": "左侧侧边栏是否可见", "value": True, "reason": "可见"}
+                ],
+            },
+        }
+    )
+    monkeypatch.setattr(service, "_ensure_zonui3b_grounding", lambda: grounding)
+    monkeypatch.setattr(service, "_capture_window_to_temp_file", lambda: "temp.png")
+    unlinked = []
+    monkeypatch.setattr("mcp_service.os.unlink", lambda path: unlinked.append(path))
+
+    result = service.inspect_window_with_zonui3b(
+        checks=["左侧侧边栏是否可见"],
+        context="这是 VS Code 截图",
+    )
+
+    assert result["success"] is True
+    assert result["result"]["checks"][0]["value"] is True
+    assert unlinked == ["temp.png"]

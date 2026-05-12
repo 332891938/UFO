@@ -123,9 +123,55 @@ def register_tools(mcp: FastMCP, service: WindowsMCPService) -> None:
         query: str = Field(
             "", description="要查找的UI元素描述。为空则返回空列表。"
         ),
+        annotate: bool = Field(
+            False, description="为 true 时让 ZonUI-3B 输出标注点截图到 output_path。"
+        ),
+        output_path: str = Field(
+            "",
+            description="可选的标注截图输出路径，仅在 annotate=true 时生效。",
+        ),
     ) -> List[Dict[str, Any]]:
         return _dump_target_list(
-            await asyncio.to_thread(service.parse_window_with_zonui3b, query)
+            await asyncio.to_thread(
+                service.parse_window_with_zonui3b,
+                query,
+                annotate,
+                output_path,
+            )
+        )
+
+    @mcp.tool()
+    async def describe_window_with_zonui3b(
+        query: str = Field(
+            "",
+            description="描述界面的提示词。为空时使用服务端默认提示词。",
+        ),
+        context: str = Field(
+            "",
+            description="补充上下文，帮助模型更准确理解当前截图场景。",
+        ),
+    ) -> Dict[str, Any]:
+        return await asyncio.to_thread(
+            service.describe_window_with_zonui3b,
+            query,
+            context,
+        )
+
+    @mcp.tool()
+    async def inspect_window_with_zonui3b(
+        checks: List[str] = Field(
+            default_factory=list,
+            description="需要逐条判断的界面状态列表。",
+        ),
+        context: str = Field(
+            "",
+            description="补充上下文，帮助模型更准确判断界面状态。",
+        ),
+    ) -> Dict[str, Any]:
+        return await asyncio.to_thread(
+            service.inspect_window_with_zonui3b,
+            checks,
+            context,
         )
 
     @mcp.tool()
@@ -136,6 +182,13 @@ def register_tools(mcp: FastMCP, service: WindowsMCPService) -> None:
         element_type: str = Field(
             "Button", description="元素类型标签，如 Button, TextBox, CheckBox。"
         ),
+        annotate: bool = Field(
+            False, description="为 true 时让 ZonUI-3B 输出标注点截图到 output_path。"
+        ),
+        output_path: str = Field(
+            "",
+            description="可选的标注截图输出路径，仅在 annotate=true 时生效。",
+        ),
     ) -> Optional[Dict[str, Any]]:
         """用ZonUI-3B视觉定位屏幕上的控件。
 
@@ -144,7 +197,7 @@ def register_tools(mcp: FastMCP, service: WindowsMCPService) -> None:
         这是替换OmniParser后新增的核心能力。
         """
         result = await asyncio.to_thread(
-            service.find_control_on_screen, description, element_type
+            service.find_control_on_screen, description, element_type, annotate, output_path
         )
         if result is None:
             return None

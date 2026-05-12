@@ -46,6 +46,8 @@ def test_register_tools_exposes_core_methods(service):
     expected = {
         "get_desktop_app_info",
         "parse_window_with_zonui3b",
+        "describe_window_with_zonui3b",
+        "inspect_window_with_zonui3b",
         "run_shell",
         "extract_pdf_text",
         "word_insert_table",
@@ -63,11 +65,65 @@ def test_find_control_on_screen_tool_serializes_targetinfo(service, monkeypatch)
         def model_dump(self):
             return {"id": "9", "name": "File", "type": "Button", "kind": "control"}
 
-    monkeypatch.setattr(service, "find_control_on_screen", lambda description, element_type: DummyTarget())
+    monkeypatch.setattr(
+        service,
+        "find_control_on_screen",
+        lambda description, element_type, annotate=False, output_path="": DummyTarget(),
+    )
 
-    result = asyncio.run(fake_mcp.funcs["find_control_on_screen"]("File", "Button"))
+    result = asyncio.run(
+        fake_mcp.funcs["find_control_on_screen"]("File", "Button", True, "D:\\temp\\point.png")
+    )
 
     assert result == {"id": "9", "name": "File", "type": "Button", "kind": "control"}
+
+
+def test_describe_window_with_zonui3b_tool_returns_dict(service, monkeypatch):
+    fake_mcp = FakeMCP()
+    register_tools(fake_mcp, service)
+    monkeypatch.setattr(
+        service,
+        "describe_window_with_zonui3b",
+        lambda query, context: {
+            "success": True,
+            "result": {"window_summary": "代码编辑器", "main_purpose": "编辑代码"},
+        },
+    )
+
+    result = asyncio.run(
+        fake_mcp.funcs["describe_window_with_zonui3b"](
+            "请描述界面",
+            "这是 VS Code 截图",
+        )
+    )
+
+    assert result["success"] is True
+    assert result["result"]["window_summary"] == "代码编辑器"
+
+
+def test_inspect_window_with_zonui3b_tool_returns_dict(service, monkeypatch):
+    fake_mcp = FakeMCP()
+    register_tools(fake_mcp, service)
+    monkeypatch.setattr(
+        service,
+        "inspect_window_with_zonui3b",
+        lambda checks, context: {
+            "success": True,
+            "result": {
+                "checks": [{"check": checks[0], "value": True, "reason": "可见"}]
+            },
+        },
+    )
+
+    result = asyncio.run(
+        fake_mcp.funcs["inspect_window_with_zonui3b"](
+            ["左侧侧边栏是否可见"],
+            "这是 VS Code 截图",
+        )
+    )
+
+    assert result["success"] is True
+    assert result["result"]["checks"][0]["value"] is True
 
 
 def test_capture_window_screenshot_tool_passes_output_options(service, monkeypatch):

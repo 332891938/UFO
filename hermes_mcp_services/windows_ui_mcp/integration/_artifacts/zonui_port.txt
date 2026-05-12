@@ -1,5 +1,0 @@
-{
-    "ComputerName":  "localhost",
-    "RemotePort":  8100,
-    "TcpTestSucceeded":  true
-}

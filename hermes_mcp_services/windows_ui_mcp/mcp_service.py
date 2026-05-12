@@ -689,6 +689,8 @@ class WindowsMCPService:
         self,
         description: str,
         element_type: str = "Button",
+        annotate: bool = False,
+        output_path: str = "",
     ) -> Optional[TargetInfo]:
         """用ZonUI-3B视觉定位屏幕上的控件。
 
@@ -710,6 +712,8 @@ class WindowsMCPService:
                 description,
                 self._window_target(),
                 element_type=element_type,
+                annotate=annotate,
+                output_path=output_path,
             )
             if target is not None:
                 local_target = self._local_target_from_automator(target, source="zonui3b")
@@ -724,6 +728,8 @@ class WindowsMCPService:
     def parse_window_with_zonui3b(
         self,
         query: str = "",
+        annotate: bool = False,
+        output_path: str = "",
     ) -> List[TargetInfo]:
         """用ZonUI-3B解析窗口。
 
@@ -746,6 +752,8 @@ class WindowsMCPService:
                 screenshot_path,
                 self._window_target(),
                 query=query,
+                annotate=annotate,
+                output_path=output_path,
             )
         finally:
             try:
@@ -758,6 +766,48 @@ class WindowsMCPService:
             for target in targets
         ]
         return self._append_targets_to_control_dict(local_targets)
+
+    def describe_window_with_zonui3b(
+        self,
+        query: str = "",
+        context: str = "",
+    ) -> Dict[str, Any]:
+        self._selected_window_required()
+        grounding = self._ensure_zonui3b_grounding()
+        screenshot_path = self._capture_window_to_temp_file()
+        try:
+            result = grounding.describe_window(
+                screenshot_path,
+                query=query,
+                context=context,
+            )
+            return result if isinstance(result, dict) else {"success": False, "error": "Invalid ZonUI-3B describe response"}
+        finally:
+            try:
+                os.unlink(screenshot_path)
+            except OSError:
+                pass
+
+    def inspect_window_with_zonui3b(
+        self,
+        checks: List[str],
+        context: str = "",
+    ) -> Dict[str, Any]:
+        self._selected_window_required()
+        grounding = self._ensure_zonui3b_grounding()
+        screenshot_path = self._capture_window_to_temp_file()
+        try:
+            result = grounding.inspect_window(
+                screenshot_path,
+                checks=checks,
+                context=context,
+            )
+            return result if isinstance(result, dict) else {"success": False, "error": "Invalid ZonUI-3B inspect response"}
+        finally:
+            try:
+                os.unlink(screenshot_path)
+            except OSError:
+                pass
 
     def inject_zonui3b_controls(
         self, control_list: List[Dict[str, Any]]
